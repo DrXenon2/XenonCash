@@ -1,0 +1,28 @@
+# /storage/emulated/0/Documents/XenonCash/XenonCash/deploy/heroku.yml
+build:
+  docker:
+    web: backend/Dockerfile  # Utilise un Dockerfile dans /backend/ (voir ci-dessous)
+
+run:
+  web: node server.js  # Commande pour lancer l'app
+
+# Configuration de l'environnement
+env:
+  NODE_ENV: production
+  PORT: 3001  # Heroku assigne un port dynamiquement, override si besoin
+  SUPABASE_URL: @supabase_url
+  SUPABASE_ANON_KEY: @supabase_anon_key
+  FLUTTERWAVE_SECRET_KEY: @flutterwave_secret_key
+  JWT_SECRET: @jwt_secret  # Génère un secret unique
+  EMAIL_USER: @email_user  # Pour Nodemailer
+  EMAIL_PASS: @email_pass  # Pour Nodemailer
+
+# Add-ons (optionnel, active si besoin)
+addons:
+  - heroku-postgresql:hobby-dev  # Optionnel, si tu veux une DB locale (Supabase est préféré)
+
+# Buildpacks (si pas Docker)
+# buildpacks:
+#   - heroku/nodejs
+
+# Dockerfile compagnon (crée dans /backend/Dockerfile)

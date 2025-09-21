@@ -1,0 +1,67 @@
+# /storage/emulated/0/Documents/XenonCash/XenonCash/deploy/github-actions/deploy.yml
+name: Deploy XenonCash
+
+# Déclencheurs : sur push ou pull request
+on:
+  push:
+    branches:
+      - main  # Déploie uniquement sur la branche main
+  pull_request:
+    branches:
+      - main
+
+# Jobs à exécuter
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout du code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Ajuste selon ta version
+
+      # Installation des dépendances (backend et frontend)
+      - name: Install dependencies
+        run: |
+          cd backend && npm install
+          cd ../frontend && npm install
+
+      # Build du frontend (si Next.js)
+      - name: Build frontend
+        run: |
+          cd frontend && npm run build
+        env:
+          NODE_ENV: production
+
+      # Déploiement vers Vercel (exemple)
+      - name: Deploy to Vercel
+        run: npx vercel --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}  # Ajoute ce secret dans GitHub
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}  # Optionnel
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}  # Optionnel
+
+      # Déploiement backend (optionnel, e.g., vers Heroku ou serveur perso)
+      - name: Deploy backend
+        run: |
+          # Exemple pour Heroku (ajuste selon ton setup)
+          cd backend && heroku git:remote -a xenoncash-api
+          git push heroku main
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}  # Ajoute ce secret
+        if: false  # Désactive pour l'instant, active si tu configures Heroku
+
+      # Vérification finale
+      - name: Verify deployment
+        run: |
+          echo "Déploiement terminé. Vérifie https://xenoncash.vercel.app ou ton serveur."
+
+# Permissions (optionnel)
+permissions:
+  contents: read
