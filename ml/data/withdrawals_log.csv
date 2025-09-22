@@ -1,0 +1,4 @@
+timestamp,user_id,amount,status,method
+2025-09-01T10:00:00Z,1001,200,completed,Mobile Money
+2025-09-02T15:30:00Z,1002,300,pending,Bank
+2025-09-03T09:00:00Z,1001,150,completed,Mobile Money

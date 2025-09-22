@@ -1,0 +1,13 @@
+{
+  "model": {
+    "name": "earnings_model",
+    "type": "linear_regression",
+    "version": "1.0",
+    "input_features": ["clicks", "conversions"],
+    "output_feature": "total_earnings"
+  },
+  "data": {
+    "source_path": "../data/processed/processed_earnings.csv",
+    "raw_path": "../data/raw/raw_transactions.csv"
+  }
+}

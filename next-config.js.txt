@@ -1,0 +1,112 @@
+// /storage/emulated/0/Documents/XenonCash/XenonCash/frontend/next-config.js
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+});
+
+const path = require('path');
+const { withWorkbox } = require('next-workbox');
+
+module.exports = withPWA(withWorkbox({
+  // Configuration de base Next.js
+  reactStrictMode: true,
+  swcMinify: true,
+
+  // Configuration Tailwind CSS
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        'css-loader',
+        'postcss-loader',
+      ],
+      include: path.resolve(__dirname, 'styles'),
+    });
+    return config;
+  },
+
+  // Configuration PWA (Service Worker)
+  pwa: {
+    dest: 'public',
+    runtimeCaching: [
+      {
+        urlPattern: /^https?.*/,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'xenoncash-offline',
+          expiration: {
+            maxEntries: 50,
+            maxAgeSeconds: 24 * 60 * 60, // 1 jour
+          },
+        },
+      },
+    ],
+  },
+
+  // Configuration Workbox (pour service worker avancé)
+  workbox: {
+    swDest: 'public/sw.js',
+    clientsClaim: true,
+    skipWaiting: true,
+    globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg}'],
+    runtimeCaching: [
+      {
+        urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'xenoncash-images',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 30 * 24 * 60 * 60, // 30 jours
+          },
+        },
+      },
+    ],
+  },
+
+  // Environnement variables
+  env: {
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+    VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
+  },
+
+  // Images (pour gérer les assets dans /public/images/)
+  images: {
+    domains: ['localhost', 'xenoncash.com'], // Ajoute ton domaine futur
+    loader: 'default',
+  },
+
+  // Redirections (optionnel, à ajuster)
+  async redirects() {
+    return [
+      {
+        source: '/old-home',
+        destination: '/',
+        permanent: true,
+      },
+    ];
+  },
+
+  // Headers (sécurité de base)
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+        ],
+      },
+    ];
+  },
+}));

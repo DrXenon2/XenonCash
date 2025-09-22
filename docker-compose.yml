@@ -1,0 +1,18 @@
+# /storage/emulated/0/Documents/XenonCash/XenonCash/docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    restart: unless-stopped
+
+# Note : Crée un Dockerfile dans /frontend/ (voir ci-dessous)
